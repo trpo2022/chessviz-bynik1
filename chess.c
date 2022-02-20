@@ -82,7 +82,7 @@ void stepchess(char** chess, char* step)
     endPosNum -= '0';
 
 
-    //printf("%d %d %d %d %ld %c\n", startPosLet, startPosNum, endPosLet, endPosNum, x, figure);
+    printf("%d %d %d %d %ld %c\n", startPosLet, startPosNum, endPosLet, endPosNum, x, figure);
 
     if (x < 5 || x > 6) {
         printf("Вы ввели некорректный ход!\n");
@@ -90,7 +90,24 @@ void stepchess(char** chess, char* step)
     } else if (startPosNum > 8 || startPosNum < 1 || endPosNum > 8 || endPosNum < 1 || startPosLet > 8 || startPosLet < 1 || endPosLet > 8 || endPosLet < 1) {
         printf("Вы вышли за пределы поля!\n");
         exit(-1);
-    } 
+    } else if (toupper(figure) != toupper(chess[startPosNum][startPosLet]) && x == 6) {
+        if (chess[startPosNum][startPosLet] == ' ') {
+            printf("На этом месте нет фигуру!\n");
+        } else {
+            printf("Вы берете не ту фигуру!\n");
+        }
+        exit(-1);
+    } else if (chess[startPosNum][startPosLet] == ' ') {
+        printf("На этом месте нет фигуру!\n");
+        exit(-1);
+    } else if ((type == '-' && chess[endPosNum][endPosLet] != ' ') || (type == 'x' && chess[endPosNum][endPosLet] == ' ') || (type != '-' && type != 'x')) {
+        printf("Вы используете некорректный тип хода!\n");
+        exit(-1);
+    } else if (x >= 7 && (end != '+' && end != '#' && end != 'e')) {
+        printf("Вы используете некорректный !\n");
+        exit(-1);       
+    }
+
 
     chess[endPosNum][endPosLet] = chess[startPosNum][startPosLet];
     chess[startPosNum][startPosLet] = ' ';   
@@ -105,6 +122,18 @@ void printchess(char** chess)
         }
         printf("\n");
     }
+}
+
+int checkking(char** chess) {
+    int flag = 0;
+    for (int i = 0; i < 9; i++) {
+        for (int j = 0; j < 9; j++) {
+            if (chess[i][j] == 'k' || chess[i][j] == 'K') {
+                flag++;
+            }
+        }       
+    }
+    return flag;
 }
 
 
@@ -122,10 +151,11 @@ int main()
     printchess(chess);
     scanf("%s", step);
 
-    
-    stepchess(chess, step);
-    printchess(chess);
-
+    while (checkking(chess) == 2) {
+        stepchess(chess, step);
+        printchess(chess);
+        scanf("%s", step); 
+    }
 
     for (i = 0; i < 9; i++) {
         free(chess[i]);
