@@ -4,7 +4,17 @@
 #include <ctype.h>
 
 
-void createchess(char** chess)
+void cleaner(char **chess)
+{
+     for (int i = 0; i < 9; i++) {
+        free(chess[i]);
+    }
+    free(chess);
+    exit(-1);
+}
+
+
+void create_chess(char** chess)
 {
     int i, j;
     char x = 'a', z = '1';
@@ -47,74 +57,84 @@ void createchess(char** chess)
     }
 }
 
-void stepchess(char** chess, char* step)
+void step_chess(char** chess, char* step)
 {
     long int x = strlen(step);
-    int startPosLet, startPosNum, endPosLet, endPosNum;
+    int start_Pos_Let, start_Pos_Num, end_Pos_Let, end_Pos_Num;
     char type, figure, end;
     if (x == 5) {
-        startPosLet = step[0];
-        startPosNum = step[1];
+        start_Pos_Let = step[0];
+        start_Pos_Num = step[1];
         type = step[2];
-        endPosLet = step[3];
-        endPosNum = step[4];
+        end_Pos_Let = step[3];
+        end_Pos_Num = step[4];
     } else if (x == 6) {
-        figure = step[0];
-        startPosLet = step[1];
-        startPosNum = step[2];
+        figure = tolower(step[0]);
+        start_Pos_Let = step[1];
+        start_Pos_Num = step[2];
         type = step[3];
-        endPosLet = step[4];
-        endPosNum = step[5];      
+        end_Pos_Let = step[4];
+        end_Pos_Num = step[5];      
     } else if (x >= 7) {
-        figure = step[0];
-        startPosLet = step[1];
-        startPosNum = step[2];
+        figure = tolower(step[0]);
+        start_Pos_Let = step[1];
+        start_Pos_Num = step[2];
         type = step[3];
-        endPosLet = step[4];
-        endPosNum = step[5];
+        end_Pos_Let = step[4];
+        end_Pos_Num = step[5];
         end = step[6];
     }
     
 
-    startPosLet -= '`';  
-    startPosNum -= '0';
-    endPosLet -= '`';
-    endPosNum -= '0';
+    start_Pos_Let -= '`';  
+    start_Pos_Num -= '0';
+    end_Pos_Let -= '`';
+    end_Pos_Num -= '0';
 
 
-    printf("%d %d %d %d %ld %c\n", startPosLet, startPosNum, endPosLet, endPosNum, x, figure);
+    printf("%d %d %d %d %ld %c\n", start_Pos_Let, start_Pos_Num, end_Pos_Let, end_Pos_Num, x, figure);
 
-    if (x < 5 || x > 6) {
+    if (x < 5 || x > 10) {  
         printf("Вы ввели некорректный ход!\n");
-        exit(-1);
-    } else if (startPosNum > 8 || startPosNum < 1 || endPosNum > 8 || endPosNum < 1 || startPosLet > 8 || startPosLet < 1 || endPosLet > 8 || endPosLet < 1) {
+        cleaner(chess);
+    } else if (start_Pos_Num > 8 || start_Pos_Num < 1 || end_Pos_Num > 8 || end_Pos_Num < 1 || start_Pos_Let > 8 || start_Pos_Let < 1 || end_Pos_Let > 8 || end_Pos_Let < 1) {
         printf("Вы вышли за пределы поля!\n");
-        exit(-1);
-    } else if (toupper(figure) != toupper(chess[startPosNum][startPosLet]) && x == 6) {
-        if (chess[startPosNum][startPosLet] == ' ') {
+        cleaner(chess);
+    } else if (figure != tolower(chess[start_Pos_Num][start_Pos_Let]) && x == 6) {
+        if (chess[start_Pos_Num][start_Pos_Let] == ' ') {
             printf("На этом месте нет фигуру!\n");
         } else {
             printf("Вы берете не ту фигуру!\n");
         }
-        exit(-1);
-    } else if (chess[startPosNum][startPosLet] == ' ') {
+        cleaner(chess);
+    } else if (chess[start_Pos_Num][start_Pos_Let] == ' ') {
         printf("На этом месте нет фигуру!\n");
-        exit(-1);
-    } else if ((type == '-' && chess[endPosNum][endPosLet] != ' ') || (type == 'x' && chess[endPosNum][endPosLet] == ' ') || (type != '-' && type != 'x')) {
+        cleaner(chess);
+    } else if ((type == '-' && chess[end_Pos_Num][end_Pos_Let] != ' ') || (type == 'x' && chess[end_Pos_Num][end_Pos_Let] == ' ') || (type != '-' && type != 'x')) {
         printf("Вы используете некорректный тип хода!\n");
-        exit(-1);
+        cleaner(chess);
     } else if (x >= 7 && (end != '+' && end != '#' && end != 'e')) {
         printf("Вы используете некорректный !\n");
-        exit(-1);       
+        cleaner(chess);       
+    }else if(start_Pos_Let == end_Pos_Let && start_Pos_Num == end_Pos_Num){
+        printf("Вы остались на месте походите ещё раз");
+        cleaner(chess);
     }
 
 
-    chess[endPosNum][endPosLet] = chess[startPosNum][startPosLet];
-    chess[startPosNum][startPosLet] = ' ';   
+    if(figure == 'r' && start_Pos_Let != end_Pos_Let && start_Pos_Num != end_Pos_Num){
+        printf("Неправильный ход ладьёй");
+    } else if(figure == 'r' && start_Pos_Let == end_Pos_Let )
+
+
+
+
+    chess[end_Pos_Num][end_Pos_Let] = chess[start_Pos_Num][start_Pos_Let];
+    chess[start_Pos_Num][start_Pos_Let] = ' ';   
 
 }
 
-void printchess(char** chess)
+void print_chess(char** chess)
 {
     for (int i = 0; i < 9; i++) {
         for (int j = 0; j < 9; j++) {
@@ -147,19 +167,15 @@ int main()
         chess[i] = (char*)malloc(9 * sizeof(char));
     }
 
-    createchess(chess);
-    printchess(chess);
+    create_chess(chess);
+    print_chess(chess);
     scanf("%s", step);
 
     while (checkking(chess) == 2) {
-        stepchess(chess, step);
-        printchess(chess);
+        step_chess(chess, step);
+        print_chess(chess);
         scanf("%s", step); 
     }
 
-    for (i = 0; i < 9; i++) {
-        free(chess[i]);
-    }
-    free(chess);
-    return 0;
+   
 }
